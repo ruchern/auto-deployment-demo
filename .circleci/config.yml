@@ -20,9 +20,6 @@ jobs:
     - run:
         name: Run test with coverage
         command: yarn test:unit --coverage
-    - run:
-        name: Build the project
-        command: yarn build
     - store_test_results:
         path: coverage
     - store_artifacts:
