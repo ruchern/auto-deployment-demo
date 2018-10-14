@@ -3,28 +3,39 @@ jobs:
   build:
     working_directory: ~/repo
     docker:
-    - image: circleci/node:latest
+      - image: circleci/node:latest
     steps:
-    - checkout
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "package.json" }}
-        - v1-dependencies-
-    - run: yarn
-    - save_cache:
-        paths:
-        - node_modules/
-        key: v1-dependencies-{{ checksum "package.json" }}
-    - run: yarn test:unit --coverage
-    - run: yarn build
-    - store_test_results:
-        path: coverage/clover.xml
-    - run: rsync ~/repo/$CIRCLECI_PROJECT_REPONAME/build $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLECI_PROJECT_REPONAME
-#  deploy:
-#    machine:
-#      enabled: true
-#    steps:
-#      - run:
-#          name: Deploy over SSH
-#          command: |
-#            ssh $SSH_USER@$SSH_HOST "cd /var/www/html/ && mkdir -p $CIRCLE_PROJECT_REPONAME"
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+      - run: yarn
+      - save_cache:
+          paths:
+            - node_modules/
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: yarn test:unit --coverage
+      - run: yarn build
+      - store_test_results:
+          path: coverage/clover.xml
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Deploy over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd /var/www/html/ && mkdir -p $CIRCLE_PROJECT_REPONAME"
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+    - build
+    - deploy:
+        requires:
+        - build
+        filters:
+          branches:
+            only: master
