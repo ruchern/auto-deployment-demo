@@ -18,11 +18,16 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
           - ~/.cache/yarn
-      - run: yarn test:unit --coverage
-      - run: yarn build
+      - run:
+          name: Run test with coverage
+          command: yarn test:unit --coverage
+      - run: 
+          name: Build the project
+          command: yarn build
       - store_test_results:
           path: coverage
   deploy:
+    working_directory: ~/repo
     machine:
       enabled: true
     steps:
