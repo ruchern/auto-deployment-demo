@@ -23,38 +23,30 @@ jobs:
     - run:
         name: Build the project
         command: yarn build
-
-    - deploy:
-      - add_ssh_keys:
-          fingerprints:
-            - "3b:1c:af:83:27:f1:30:7c:28:53:de:ed:1b:25:a4:25"
-      - run :
-          name: Deploy
-          command: scp -r dist/ $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLE_PROJECT_REPONAME
     - store_test_results:
         path: coverage
     - store_artifacts:
         path: coverage
-#  deploy:
-#    machine:
-#      enabled: true
-#    steps:
-#      - run:
-#          name: Check for project
-#          command: ls -la ~/repo
-#      - run:
-#          name: Deploy over SSH
-#          command: |
-#            scp -r ~/repo/dist/ $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLE_PROJECT_REPONAME
-#
-#workflows:
-#  version: 2
-#  build-and-deploy:
-#    jobs:
-#    - build
-#    - deploy:
-#        requires:
-#        - build
+  deploy:
+    machine:
+      enabled: true
+    steps:
+    - run:
+        name: Deploy over SSH
+        command: |
+          ssh $SSH_USER@$SSH_HOST
+          cd /var/www/html/$CIRCLE_PROJECT_REPONAME
+          git pull
+          yarn build
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+    - build
+    - deploy:
+        requires:
+        - build
 #        filters:
 #          branches:
 #            only: master
