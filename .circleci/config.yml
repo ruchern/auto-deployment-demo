@@ -23,23 +23,16 @@ jobs:
           command: yarn test:unit --coverage
       - run:
           name: Build the project
-          command: yarn build && pwd
+          command: yarn build
       - store_test_results:
           path: coverage
       - store_artifacts:
           path: dist
-  deploy:
-    working_directory: ~/repo
-    machine:
-      enabled: true
-    steps:
-      - run:
-          name: Check for project
-          command: ls -la ~/repo
-      - run:
-          name: Deploy over SSH
+      - deploy:
           command: |
-            scp -r ~/repo/dist/ $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLE_PROJECT_REPONAME
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              scp -r ~/repo/dist/ $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLE_PROJECT_REPONAME
+            fi
 
 workflows:
   version: 2
