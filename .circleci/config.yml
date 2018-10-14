@@ -15,10 +15,10 @@ jobs:
           paths:
             - node_modules/
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: yarn test:unit
+      - run: yarn test:unit --coverage
       - run: yarn build
       - store_test_results:
-          path: test/unit/coverage/clover.xml
+          path: coverage/clover.xml
   deploy:
     machine:
       enabled: true
