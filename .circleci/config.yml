@@ -2,21 +2,22 @@ version: 2
 jobs:
   build:
     working_directory: ~/repo
-    environment:
-      TEST_RESULTS: coverage
     docker:
       - image: circleci/node:latest
     steps:
       - checkout
       - restore_cache:
+          name: Restore Yarn Package Cache
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-      - run: yarn
+          - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn
       - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
-            - node_modules/
-          key: v1-dependencies-{{ checksum "package.json" }}
+          - ~/.cache/yarn
       - run: yarn test:unit --coverage
       - run: yarn build
       - store_test_results:
