@@ -21,9 +21,9 @@ jobs:
       - run:
           name: Run test with coverage
           command: yarn test:unit --coverage
-      - run: 
+      - run:
           name: Build the project
-          command: yarn build
+          command: yarn build && pwd
       - store_test_results:
           path: coverage
   deploy:
