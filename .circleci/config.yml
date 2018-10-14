@@ -32,9 +32,12 @@ jobs:
       enabled: true
     steps:
       - run:
-          name: Deploy over SSH
-          command: |
-            scp -r ~/repo/dist/ $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLE_PROJECT_REPONAME
+          name: Check for project
+          command: ls -la ~/repo
+#      - run:
+#          name: Deploy over SSH
+#          command: |
+#            scp -r ~/repo/dist/ $SSH_USER@$SSH_HOST:/var/www/html/$CIRCLE_PROJECT_REPONAME
 
 workflows:
   version: 2
