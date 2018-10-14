@@ -2,6 +2,8 @@ version: 2
 jobs:
   build:
     working_directory: ~/repo
+    environment:
+      TEST_RESULTS: coverage
     docker:
       - image: circleci/node:latest
     steps:
@@ -18,7 +20,7 @@ jobs:
       - run: yarn test:unit --coverage
       - run: yarn build
       - store_test_results:
-          path: coverage/clover.xml
+          path: coverage
   deploy:
     machine:
       enabled: true
